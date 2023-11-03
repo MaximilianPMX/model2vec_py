@@ -1,20 +1,27 @@
 import torch
-from model2vec.models.simple_model import SimpleModel # Assuming simple_model.py is in the models directory
 
-def generate_embedding(model, input_data):
-    model.eval()
-    with torch.no_grad():
-        embedding = model.fc1(input_data) # Example: Using output of the first fully connected layer as embedding
-    return embedding.numpy()
 
-if __name__ == '__main__':
-    model = SimpleModel()
-    # Load a trained model (replace 'path/to/trained_model.pth' with your actual path)
-    # model.load_state_dict(torch.load('path/to/trained_model.pth'))
+class ModelEmbedder:
+    def __init__(self, model):
+        self.model = model
 
-    # Dummy Input
-    dummy_input = torch.randn(1, 10)  # Example of input data for the model
-    embedding = generate_embedding(model, dummy_input)
+    def embed(self, input_data):
+        # Placeholder for embedding logic
+        raise NotImplementedError("Embed method not implemented yet. Implement in subclass.")
 
-    print(f"Embedding shape: {embedding.shape}")
-    print(f"Embedding: {embedding}")
+
+def load_model(checkpoint_path):
+    """Loads a model from a checkpoint file.
+
+    Args:
+        checkpoint_path (str): The path to the model checkpoint file.
+
+    Returns:
+        torch.nn.Module: The loaded model.
+    """
+    try:
+        model = torch.load(checkpoint_path)
+        return model
+    except Exception as e:
+        print(f"Error loading model: {e}")
+        return None
