@@ -1,29 +1,37 @@
 import torch
+import torch.nn as nn
 import torch.optim as optim
-from model2vec.models.simple_model import SimpleModel # Assuming simple_model.py is in the models directory
-from model2vec.data.data_loader import create_dataloader, DummyDataset # Assuming data_loader.py is in the data directory
 
-def train(model, data_loader, optimizer, epochs=10):
-    model.train()
-    for epoch in range(epochs):
-        running_loss = 0.0
-        for i, (inputs, labels) in enumerate(data_loader):
-            optimizer.zero_grad()
-            outputs = model(inputs)
-            loss = torch.nn.functional.nll_loss(outputs, labels)
-            loss.backward()
-            optimizer.step()
 
-            running_loss += loss.item()
-            if i % 10 == 9: # Print every 10 batches
-                print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 10:.3f}')
-                running_loss = 0.0
+class Trainer:
+    def __init__(self, model, data_loader, optimizer, loss_fn, device='cpu'):
+        self.model = model
+        self.data_loader = data_loader
+        self.optimizer = optimizer
+        self.loss_fn = loss_fn
+        self.device = device
+        self.model.to(self.device)
 
-    print('Finished Training')
+    def train(self, epochs):
+        self.model.train()
+        for epoch in range(epochs):
+            running_loss = 0.0
+            for i, data in enumerate(self.data_loader):
+                inputs, labels = data
+                inputs = inputs.to(self.device)
+                labels = labels.to(self.device)
 
-if __name__ == '__main__':
-    model = SimpleModel()
-    dataset = DummyDataset()
-    data_loader = create_dataloader(dataset, batch_size=32)
-    optimizer = optim.Adam(model.parameters())
-    train(model, data_loader, optimizer)
+                self.optimizer.zero_grad()
+
+                outputs = self.model(inputs)
+                loss = self.loss_fn(outputs, labels)
+                loss.backward()
+                self.optimizer.step()
+
+                running_loss += loss.item()
+
+                if i % 100 == 99:  # Print every 100 mini-batches
+                    print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 100:.3f}')
+                    running_loss = 0.0
+
+        print('Finished Training')
