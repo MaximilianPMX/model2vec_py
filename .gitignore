@@ -1,6 +1,11 @@
-private_doc/
-
-private_doc/*
-.DS_Store
 *.pyc
 __pycache__/
+*.log
+private_doc/
+.DS_Store
+*.egg-info/
+dist/
+build/
+venv/
+
+private_doc/*
