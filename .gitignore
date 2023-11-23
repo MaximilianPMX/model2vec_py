@@ -1,0 +1,6 @@
+private_doc/
+
+private_doc/*
+.DS_Store
+*.pyc
+__pycache__/
